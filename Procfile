@@ -1,1 +1,1 @@
-web: gunicorn -w 4 app:lightcurves
+web: gunicorn -w 4 app:app
