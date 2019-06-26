@@ -1,18 +1,20 @@
 from flask import Flask, render_template, request, make_response
 import numpy as np
 import requests
-import matplotlib.pyplot as plt
 import pandas as p
 from IPython.display import display, HTML
 import json
 import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+
 from matplotlib.pyplot import figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 import io
 
+
 import mpld3
 from mpld3 import fig_to_html, plugins
-matplotlib.use('Agg')
 planeturl = "https://exo.mast.stsci.edu/api/v0.1/exoplanets/"
 dvurl = "https://exo.mast.stsci.edu/api/v0.1/dvdata/tess/"
 header={}
