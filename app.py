@@ -5,13 +5,14 @@ import matplotlib.pyplot as plt
 import pandas as p
 from IPython.display import display, HTML
 import json
+import matplotlib
 from matplotlib.pyplot import figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 import io
 
 import mpld3
 from mpld3 import fig_to_html, plugins
-
+matplotlib.use('Agg')
 planeturl = "https://exo.mast.stsci.edu/api/v0.1/exoplanets/"
 dvurl = "https://exo.mast.stsci.edu/api/v0.1/dvdata/tess/"
 header={}
