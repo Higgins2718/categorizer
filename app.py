@@ -31,8 +31,8 @@ def hello_world(tessid, sector_name, planet_name):
     print(sector_name, 'sector_name')
     print(planet_name, 'planet_name')
 
-    planet_name = "WASP-18 b"
-
+    #planet_name = "WASP-18 b"
+    planet_name = planet_name
     url = planeturl + "/identifiers/"
 
     myparams = {"name": planet_name}
