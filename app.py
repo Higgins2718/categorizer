@@ -1,175 +1,42 @@
-from flask import Flask, render_template, request, make_response
+from flask import (
+    Flask,
+    render_template,
+    request,
+    make_response,
+)
 import numpy as np
 import requests
-import pandas as p
+import pandas as pd
 from IPython.display import display, HTML
 import json
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
 
-from matplotlib.pyplot import figure
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+import pickle
 import io
 
-
-import mpld3
-from mpld3 import fig_to_html, plugins
-planeturl = "https://exo.mast.stsci.edu/api/v0.1/exoplanets/"
-dvurl = "https://exo.mast.stsci.edu/api/v0.1/dvdata/tess/"
-header={}
+from sklearn.feature_extraction.text import TfidfVectorizer, TfidfTransformer, CountVectorizer
 
 
 app = Flask(__name__)
 
-# receive tessid, sector name
-@app.route('/<tessid>/<sector_name>/<planet_name>')
+@app.route("/api/")
+def default(request):
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+    content = body['text']
+    data = pd.read_csv("train_test.csv", header=0)
+    labels = ['environment', 'safety', 'community', 'roads']
+    Naive = pickle.load(open("pickle_model.pkl", 'rb'))
 
-def hello_world(tessid, sector_name, planet_name):
-    planet_name = planet_name.replace('%20', ' ').replace('+', ' ')
-    print(tessid, 'tessid')
-    print(sector_name, 'sector_name')
-    print(planet_name, 'planet_name')
+    # Load it later
+    transformer = TfidfTransformer()
+    loaded_vec = CountVectorizer(decode_error="replace", vocabulary=pickle.load(open("vocabulary.pkl", "rb")))
 
-    #planet_name = "WASP-18 b"
-    planet_name = planet_name
-    url = planeturl + "/identifiers/"
+    # text = ["this playground is dangerous. someone could break an arm on the jungle gym"]
+    tfidf = transformer.fit_transform(loaded_vec.fit_transform(np.array([content])))
+    prediction = Naive.predict(tfidf)
 
-    myparams = {"name": planet_name}
-    r = requests.get(url=url, params=myparams, headers=header)
-    print(r.json())
-
-    print(r.headers.get('content-type'))
-    planet_names = r.json()
-    #ticid = planet_names['tessID']
-    ticid = tessid
-    tce = planet_names['tessTCE']
-    print(tce)
-    print(ticid)
-
-    #url = dvurl + str(ticid) + '/tces/'
-    #myparams = {"tce": tce}
-
-    #r = requests.get(url=url, params=myparams, headers=header)
-    #sectorInfo = r.json()
-
-    #sectors = [x[:11] for x in sectorInfo["TCE"] if tce in x]
-
-    url = dvurl + str(ticid) + '/table/'
-    print(url, 'URL')
-    #print(sectors[0], "SECTOR")
-    myparams = {"tce": tce,
-                "sector": sector_name}
-
-    r = requests.get(url=url, params=myparams, headers=header).json()
-
-    #if r.status_code == 200:
-        #tce_data = r.json()
-        #tce_data = json.loads(r.text)
-    #else:
-        #print(r.status_code)
-    tce_data = r
-    print("tce_data:::", tce_data)
-    data = p.DataFrame.from_dict(tce_data['data'])
-
-    detrend = data['LC_DETREND']
-    model = data['MODEL_INIT']
-    time = data['TIME']
-    fig = figure()
-    ax = fig.gca()
-    #ax.plot([1, 2, 3, 4])
-    ax.plot(time, detrend, '.', lw=0.4)
-    ax.plot(time, model, 'r-', lw=0.6)
-    ax.set_xlabel('TIME (BTJD)')
-    ax.set_ylabel('Relative Flux')
-    canvas = FigureCanvas(fig)
-    output = io.BytesIO()
-    canvas.print_png(output)
-    response = make_response(output.getvalue())
-    response.mimetype = 'image/png'
-    return response
-
-    #return render_template("lightcurve.html", title='Light Curve')
-
-# receive tessid, sector name
-@app.route('/planet/<planet_name>/')
-
-def default(planet_name):
-    #planet_name = "WASP-18"
-    #planet_name = "TIC 117739806"
-    planet_name = planet_name.replace('%20', ' ').replace('+', ' ')
-
-    url = planeturl + "/identifiers/"
-
-    myparams = {"name": planet_name}
-
-    r = requests.get(url=url, params=myparams, headers=header)
-    print(r.headers.get('content-type'))
-    planet_names = r.json()
-    ticid = planet_names['tessID']
-    tce = planet_names['tessTCE']
-
-    url = dvurl + str(ticid) + '/tces/'
-    myparams = {"tce": tce}
-
-    r = requests.get(url=url, params=myparams, headers=header)
-    sectorInfo = r.json()
-    print("TICID: ", ticid)
-    print("TCE: ", tce)
-
-    print("SECTORS:", sectorInfo)
-
-    sectors = [x[:11] for x in sectorInfo["TCE"] if tce in x]
+    return labels[prediction[0]]
 
 
-    url = dvurl + str(ticid) + '/table/'
-    myparams = {"tce": tce,
-                "sector": sectors[0]}
-
-    print("PASS ThiS THROUGH:", sectors[0])
-    print("PARAMS:", myparams)
-
-    r = requests.get(url=url, params=myparams, headers=header)
-    tce_data = r.json()
-
-
-    data = p.DataFrame.from_dict(tce_data['data'])
-
-    detrend = data['LC_DETREND']
-    model = data['MODEL_INIT']
-    time = data['TIME']
-    fig = figure()
-    ax = fig.gca()
-    #ax.plot([1, 2, 3, 4])
-    ax.plot(time, detrend, '.', lw=0.4)
-    ax.plot(time, model, 'r-', lw=0.6)
-    ax.set_xlabel('TIME (BTJD)')
-    ax.set_ylabel('Relative Flux')
-    canvas = FigureCanvas(fig)
-    output = io.BytesIO()
-    canvas.print_png(output)
-    response = make_response(output.getvalue())
-    response.mimetype = 'image/png'
-    return response
-
-    #return render_template("lightcurve.html", title='Light Curve')
-@app.route('/json/<planet_name>')
-
-def json_stuff(planet_name):
-
-
-    planet_name = planet_name.replace('%20', ' ').replace('+', ' ')
-
-    url = planeturl + "/identifiers/"
-
-    myparams = {"name": planet_name}
-
-    r = requests.get(url=url, params=myparams, headers=header)
-    print(r.headers.get('content-type'))
-    planet_names = r.json()
-    #ticid = planet_names['tessID']
-    #tce = planet_names['tessTCE']
-    return str(planet_names)
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run()
