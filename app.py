@@ -9,7 +9,6 @@ from flask import (
 import numpy as np
 import requests
 import pandas as pd
-from IPython.display import display, HTML
 import json
 
 import pickle
@@ -20,24 +19,24 @@ from sklearn.feature_extraction.text import TfidfVectorizer, TfidfTransformer, C
 
 app = Flask(__name__)
 
-@app.route("/api/")
-def default(request):
-    body_unicode = request.body.decode('utf-8')
-    body = json.loads(body_unicode)
-    content = body['text']
-    data = pd.read_csv("train_test.csv", header=0)
-    labels = ['environment', 'safety', 'community', 'roads']
-    Naive = pickle.load(open("pickle_model.pkl", 'rb'))
+#@app.route("/api/")
+#def default(request):
+    #body_unicode = request.body.decode('utf-8')
+    #body = json.loads(body_unicode)
+    #content = body['text']
+    #data = pd.read_csv("train_test.csv", header=0)
+    #labels = ['environment', 'safety', 'community', 'roads']
+    #Naive = pickle.load(open("pickle_model.pkl", 'rb'))
 
     # Load it later
-    transformer = TfidfTransformer()
-    loaded_vec = CountVectorizer(decode_error="replace", vocabulary=pickle.load(open("vocabulary.pkl", "rb")))
+    #transformer = TfidfTransformer()
+    #loaded_vec = CountVectorizer(decode_error="replace", vocabulary=pickle.load(open("vocabulary.pkl", "rb")))
 
     # text = ["this playground is dangerous. someone could break an arm on the jungle gym"]
-    tfidf = transformer.fit_transform(loaded_vec.fit_transform(np.array([content])))
-    prediction = Naive.predict(tfidf)
+    #tfidf = transformer.fit_transform(loaded_vec.fit_transform(np.array([content])))
+    #prediction = Naive.predict(tfidf)
 
-    return labels[prediction[0]]
+    #return labels[prediction[0]]
 
 @app.route("/")
 def home():
