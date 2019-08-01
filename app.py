@@ -9,10 +9,10 @@ from flask import (
 import numpy as np
 import requests
 import pandas as pd
-import json
+#import json
 
-import pickle
-import io
+#import pickle
+#import io
 
 from sklearn.feature_extraction.text import TfidfVectorizer, TfidfTransformer, CountVectorizer
 
