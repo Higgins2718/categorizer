@@ -20,7 +20,7 @@ app = Flask(__name__)
 
 @app.route("/api/", methods=['GET', 'POST'])
 def default():
-    body_unicode = request.body.decode('utf-8')
+    body_unicode = request.data.decode('utf-8')
     body = json.loads(body_unicode)
     content = body['text']
     data = pd.read_csv("train_test.csv", header=0)
