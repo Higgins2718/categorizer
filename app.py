@@ -21,7 +21,9 @@ app = Flask(__name__)
 @app.route("/api/", methods=['GET', 'POST'])
 def default():
     body_unicode = request.data.decode('utf-8')
-    body = json.loads(body_unicode)
+    print(request.get_data())
+    #body = json.loads(body_unicode)
+    body = request.get_data()
     content = body['text']
     data = pd.read_csv("train_test.csv", header=0)
     labels = ['environment', 'safety', 'community', 'roads']
