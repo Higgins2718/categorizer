@@ -23,8 +23,8 @@ def default():
     body_unicode = request.data.decode('utf-8')
     print(request.get_data())
     #body = json.loads(body_unicode)
-    body = request.get_data()
-    content = body['text']
+    content = request.get_data()
+    #content = body['text']
     data = pd.read_csv("train_test.csv", header=0)
     labels = ['environment', 'safety', 'community', 'roads']
     Naive = pickle.load(open("pickle_model.pkl", 'rb'))
