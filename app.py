@@ -12,7 +12,7 @@ import json
 
 import pickle
 #import io
-
+import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer, TfidfTransformer, CountVectorizer
 
 # TODO Fix robots.txt
@@ -25,13 +25,13 @@ def default():
     #body = json.loads(body_unicode)
     content = request.get_data()
     #content = body['text']
-    data = pd.read_csv("train_test.csv", header=0)
+    data = pd.read_csv("models/train_test.csv", header=0)
     labels = ['environment', 'safety', 'community', 'roads']
-    Naive = pickle.load(open("pickle_model.pkl", 'rb'))
+    Naive = pickle.load(open("models/pickle_model.pkl", 'rb'))
 
     # Load it later
     transformer = TfidfTransformer()
-    loaded_vec = CountVectorizer(decode_error="replace", vocabulary=pickle.load(open("vocabulary.pkl", "rb")))
+    loaded_vec = CountVectorizer(decode_error="replace", vocabulary=pickle.load(open("models/vocabulary.pkl", "rb")))
 
     # text = ["this playground is dangerous. someone could break an arm on the jungle gym"]
     tfidf = transformer.fit_transform(loaded_vec.fit_transform(np.array([content])))
