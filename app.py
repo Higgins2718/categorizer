@@ -18,7 +18,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer, TfidfTransformer, C
 # TODO Fix robots.txt
 app = Flask(__name__)
 
-@app.route("/api/")
+@app.route("/api/", methods=['GET', 'POST'])
 def default(request):
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)
