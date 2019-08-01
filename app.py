@@ -19,7 +19,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer, TfidfTransformer, C
 app = Flask(__name__)
 
 @app.route("/api/", methods=['GET', 'POST'])
-def default(request):
+def default():
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)
     content = body['text']
