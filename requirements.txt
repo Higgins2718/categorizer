@@ -1,7 +1,7 @@
 docker==2.5.1
 docker-pycreds==0.2.1
 
-Flask==0.12
+Flask==1.0
 Flask-SQLAlchemy==2.4.0
 ftfy==4.4.3
 future==0.16.0
